@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import Replicate from 'replicate';
 
+export const maxDuration = 30; // Set max duration to 30 seconds
+
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
 });
