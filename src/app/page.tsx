@@ -1,100 +1,119 @@
+'use client';
 import Image from "next/image";
+import { useState } from "react";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [isLoading, setIsLoading] = useState(false);
+  const [imageUrl, setImageUrl] = useState("/placeholder-comic.jpg");
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const generateComic = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch("/api/generate", {
+        method: "POST",
+      });
+      const data = await response.json();
+      if (data.imageUrl) {
+        setImageUrl(data.imageUrl);
+      }
+    } catch (error) {
+      console.error("Failed to generate comic:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      {/* Header */}
+      <header className="bg-white dark:bg-slate-800 shadow-md py-4">
+        <div className="max-w-6xl mx-auto px-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+            Totoro Comics
+          </h1>
+          <nav className="space-x-6">
+            <a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Latest</a>
+            <a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">Archive</a>
+            <a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400">About</a>
+          </nav>
+        </div>
+      </header>
+
+      {/* Title Banner */}
+      <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 py-12 mb-8">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <h1 className="text-5xl font-bold text-white mb-2">Totoro Comics</h1>
+          <p className="text-xl text-indigo-100">AI-Generated Comic Adventures</p>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <main className="max-w-4xl mx-auto px-4 py-8">
+        {/* Comic Navigation */}
+        <div className="flex justify-center mb-4">
+          <button 
+            onClick={generateComic}
+            disabled={isLoading}
+            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-bold text-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            {isLoading ? "Generating..." : "Generate Comic"}
+          </button>
+        </div>
+
+        {/* Comic Display */}
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-4 mb-8">
+          <div className="relative min-h-[600px]">
+            {isLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-slate-100 dark:bg-slate-700 rounded-md">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+              </div>
+            )}
+            {imageUrl !== "/placeholder-comic.jpg" && (
+              <Image
+                src={imageUrl}
+                alt="Generated comic"
+                width={800}
+                height={600}
+                className="w-full h-auto rounded-md"
+                priority
+              />
+            )}
+          </div>
+          {imageUrl !== "/placeholder-comic.jpg" && (
+            <>
+              <h2 className="text-xl font-bold mt-4 mb-2">Latest Comic</h2>
+              <p className="text-gray-600 dark:text-gray-300">Generated on {new Date().toLocaleDateString()}</p>
+            </>
+          )}
+        </div>
+
+        {/* Comic Description/Commentary */}
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6">
+          <p className="text-gray-700 dark:text-gray-200">
+            Author's commentary or comic description goes here. This can be a fun place to share
+            thoughts about the creative process or additional context for the story.
+          </p>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      {/* Footer */}
+      <footer className="bg-white dark:bg-slate-800 shadow-md mt-16 py-6">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <div className="flex justify-center space-x-6 mb-4">
+            <a href="#" className="text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400">
+              Twitter
+            </a>
+            <a href="#" className="text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400">
+              Instagram
+            </a>
+            <a href="#" className="text-gray-600 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400">
+              RSS Feed
+            </a>
+          </div>
+          <p className="text-gray-500 dark:text-gray-400">
+            © 2024 Comic Title. All rights reserved.
+          </p>
+        </div>
       </footer>
     </div>
   );
