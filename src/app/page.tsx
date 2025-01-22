@@ -90,7 +90,7 @@ export default function Home() {
         {/* Comic Description/Commentary */}
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-6">
           <p className="text-gray-700 dark:text-gray-200">
-            Author's commentary or comic description goes here. This can be a fun place to share
+            Author&apos;s commentary or comic description goes here. This can be a fun place to share
             thoughts about the creative process or additional context for the story.
           </p>
         </div>

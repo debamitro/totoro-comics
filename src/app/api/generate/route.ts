@@ -16,7 +16,10 @@ export async function POST() {
       }
     );
 
-    // Get the first stream from the output array
+    if (!output || !Array.isArray(output) || output.length === 0) {
+      throw new Error("Invalid output format");
+    }
+    
     const stream = output[0];
     
     // Convert stream to blob
