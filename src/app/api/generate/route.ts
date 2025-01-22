@@ -33,7 +33,10 @@ export async function POST() {
     const base64String = Buffer.from(arrayBuffer).toString('base64');
     const dataUrl = `data:image/png;base64,${base64String}`;
 
-    return NextResponse.json({ imageUrl: dataUrl });
+    return NextResponse.json({ 
+      imageUrl: dataUrl, 
+      description: "Totoro hacking on a computer at MIT, using hands to type" 
+    });
   } catch (error) {
     console.error("Error generating image:", error);
     return NextResponse.json(
